@@ -1,6 +1,6 @@
 
-# This is a Fork of alt-switcher, originally by [Pablo Merino](
-I am using it for my personal setup, and have made some modifications to the original code.
+This repository is a fork of [alt-switcher](https://github.com/pablo-merino/altswitch)
+by Pablo Merino, adapted for my personal setup.
 
 
 # Alt-tab switcher

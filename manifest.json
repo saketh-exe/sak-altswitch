@@ -4,6 +4,7 @@
   "id": "sak.altswitch",
   "name": "Alt-tab switcher",
   "version": "1.0.0",
+  "license": "MIT",
   "author": "Vishnu Saketh",
   "description": "Windows-style ALT+TAB window switcher across every workspace, ordered by most recently used.",
   "kinds": [
