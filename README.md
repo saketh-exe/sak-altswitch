@@ -1,3 +1,8 @@
+
+# This is a Fork of alt-switcher, originally by [Pablo Merino](
+I am using it for my personal setup, and have made some modifications to the original code.
+
+
 # Alt-tab switcher
 
 Windows-style `ALT`+`TAB` for [Omarchy](https://omarchy.org/). Cycles every
@@ -40,13 +45,13 @@ No other dependencies, and nothing to install beyond this repository.
 Add the plugin and enable it:
 
 ```bash
-omarchy plugin add https://github.com/Pablo-Merino/omarchy-altswitch.git --enable
+omarchy plugin add https://github.com/saketh-exe/sak-altswitch.git --enable
 ```
 
 Then load the keybindings from `~/.config/hypr/bindings.lua`:
 
 ```lua
-dofile(os.getenv("HOME") .. "/.config/omarchy/plugins/io.github.pablo-merino.altswitch/altswitch.lua")
+dofile(os.getenv("HOME") .. "/.config/omarchy/plugins/sak.altswitch/altswitch.lua")
 ```
 
 Apply it with `hyprctl reload`.

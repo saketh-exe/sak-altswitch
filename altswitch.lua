@@ -123,6 +123,37 @@ local function altswitch_step(delta)
   altswitch_send("show", altswitch_payload())
 end
 
+local function altswitch_jump_workspace(ws_num)
+  if not altswitch.active then return end
+  local ws_str = tostring(ws_num)
+  local matching_indices = {}
+  for i, window in ipairs(altswitch.windows) do
+    local ws = window.workspace
+    if ws and (tostring(ws.id) == ws_str or tostring(ws.name) == ws_str) then
+      matching_indices[#matching_indices + 1] = i
+    end
+  end
+
+  -- If workspace has no open windows, immediately jump to that empty workspace
+  if #matching_indices == 0 then
+    altswitch_teardown()
+    hl.exec_cmd("hyprctl dispatch workspace " .. ws_str)
+    return
+  end
+
+  -- If currently on one of the matching windows, cycle to the next window on that workspace
+  local next_index = matching_indices[1]
+  for k, idx in ipairs(matching_indices) do
+    if idx == altswitch.index then
+      next_index = matching_indices[(k % #matching_indices) + 1]
+      break
+    end
+  end
+
+  altswitch.index = next_index
+  altswitch_send("select", tostring(altswitch.index - 1))
+end
+
 -- Self-heal hook for the panel. If the ALT release is ever missed, the panel
 -- gives up on its own after a few seconds and calls this, so the two halves
 -- cannot disagree about whether a switch is still in progress.
@@ -135,6 +166,31 @@ hl.unbind("ALT + SHIFT + TAB")
 hl.bind("ALT + TAB", function() altswitch_step(1) end, { description = "Switch window" })
 hl.bind("ALT + SHIFT + TAB", function() altswitch_step(-1) end, { description = "Switch window (reverse)" })
 hl.bind("ALT + ESCAPE", altswitch_teardown, { non_consuming = true, description = "Cancel window switch" })
+
+-- Arrow keys navigation while Alt is held
+hl.bind("ALT + Down", function() if altswitch.active then altswitch_step(1) end end, { description = "Switch window (down)" })
+hl.bind("ALT + Up", function() if altswitch.active then altswitch_step(-1) end end, { description = "Switch window (up)" })
+hl.bind("ALT + Right", function() if altswitch.active then altswitch_step(1) end end, { description = "Switch window (right)" })
+hl.bind("ALT + Left", function() if altswitch.active then altswitch_step(-1) end end, { description = "Switch window (left)" })
+
+-- Vim keys navigation (j/k)
+hl.bind("ALT + j", function() if altswitch.active then altswitch_step(1) end end, { description = "Switch window (vim down)" })
+hl.bind("ALT + k", function() if altswitch.active then altswitch_step(-1) end end, { description = "Switch window (vim up)" })
+
+-- Number keys 1-9 and 0 (for workspace 10) to jump/cycle windows on that workspace
+for i = 1, 9 do
+  hl.bind("ALT + " .. tostring(i), function()
+    if altswitch.active then
+      altswitch_jump_workspace(i)
+    end
+  end, { description = "Jump to workspace " .. tostring(i) })
+end
+
+hl.bind("ALT + 0", function()
+  if altswitch.active then
+    altswitch_jump_workspace(10)
+  end
+end, { description = "Jump to workspace 10" })
 
 -- Committing on ALT release cannot be a keybind. A release bind on a modifier
 -- only fires when that modifier is tapped on its own; pressing TAB in between
